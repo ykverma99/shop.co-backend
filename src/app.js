@@ -2,6 +2,7 @@ import express, { urlencoded } from "express";
 import cors from "cors";
 import { config } from "dotenv";
 import connectDB from "./database/connectDB.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(
     origin: process.env.CLIENT_URI,
   })
 );
+app.use(cookieParser());
 
 connectDB();
 
