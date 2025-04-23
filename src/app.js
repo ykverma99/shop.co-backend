@@ -1,12 +1,14 @@
+// config dotenv
+import { config } from "dotenv";
+config({ path: "./.env" });
+
 import express, { urlencoded } from "express";
 import cors from "cors";
-import { config } from "dotenv";
 import connectDB from "./database/connectDB.js";
 import cookieParser from "cookie-parser";
 
 const app = express();
 
-config({ path: "./.env" });
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(

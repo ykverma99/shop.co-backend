@@ -22,6 +22,7 @@ const addProduct = asyncHandler(async (req, res) => {
   const productImages = await Promise.all(
     req.files.map(async (file) => {
       const cloudImage = await uploadOnCloudinary(file.path);
+      if (!cloudImage) throw new ApiError(500, "Image upload failed");
       return cloudImage.url;
     })
   );
@@ -39,4 +40,31 @@ const addProduct = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, product, "Product created successfully"));
 });
 
-export { addProduct };
+const getAllProduct = asyncHandler(async (req, res) => {
+  const { limit } = req.query;
+
+  let products;
+  if (limit) {
+    products = await Product.find().limit(parseInt(limit));
+  }
+  if (!limit) {
+    products = await products.find();
+  }
+
+  res.status(200).json({
+    success: true,
+    products,
+  });
+});
+
+const getSingleprodcut = asyncHandler(async (req, res) => {
+  const { productId, productName } = req.query;
+
+  const product = await Product.findOne({
+    $or: [{ _id: productId }, { productName }],
+  });
+
+  return res.status(200).json(new ApiResponse(200, product));
+});
+
+export { addProduct, getAllProduct, getSingleprodcut };
