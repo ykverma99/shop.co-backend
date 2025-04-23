@@ -6,7 +6,6 @@ import jwt from "jsonwebtoken";
 export const verifyJWT = asyncHandler(async (req, res, next) => {
   try {
     const token = req.cookies?.accessToken;
-    console.log(token, "TOken");
 
     if (!token) {
       throw new ApiError(401, "Unauthorize request");
@@ -27,4 +26,11 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
   } catch (error) {
     throw new ApiError(401, error?.message || "Invalid Access Token");
   }
+});
+
+export const isAdmin = asyncHandler((req, res, next) => {
+  if (!req.user?.isAdmin) {
+    throw new ApiError(403, "Access denied. Admin only");
+  }
+  next();
 });

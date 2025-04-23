@@ -21,8 +21,10 @@ connectDB();
 
 // import Routes
 import userRoute from "./routes/user.route.js";
+import productRoute from "./routes/product.route.js";
 
 // Acces Routes
 app.use("/api/v1/user", userRoute);
+app.use("/api/v1/product", productRoute);
 
 export default app;
