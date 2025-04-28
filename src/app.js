@@ -24,11 +24,13 @@ connectDB();
 // import Routes
 import userRoute from "./routes/user.route.js";
 import productRoute from "./routes/product.route.js";
+import addressRoute from "./routes/address.route.js";
 import { ApiError } from "./utils/ApiError.js";
 
 // Acces Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
+app.use("/api/v1/address", addressRoute);
 
 // To make the apiError in json formate
 app.use((err, req, res, next) => {

@@ -19,6 +19,10 @@ const categorySchema = Schema(
         type: String,
       },
     ],
+    productId: {
+      type: Schema.Types.ObjectId,
+      ref: "Product",
+    },
   },
   { timestamps: true }
 );
