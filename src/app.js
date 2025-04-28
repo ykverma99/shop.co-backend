@@ -31,6 +31,8 @@ import { ApiError } from "./utils/ApiError.js";
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/address", addressRoute);
+// cart
+app.use("/api/v1/cart", cartRoute);
 
 // To make the apiError in json formate
 app.use((err, req, res, next) => {

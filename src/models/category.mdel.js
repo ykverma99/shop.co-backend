@@ -2,13 +2,12 @@ import mongoose, { Schema } from "mongoose";
 
 const categorySchema = Schema(
   {
-    categoryName: [
-      {
-        type: String,
-        required: true,
-        trim: true,
-      },
-    ],
+    categoryName: {
+      type: String,
+      unique: true,
+      required: true,
+      trim: true,
+    },
     colors: [
       {
         type: String,
