@@ -13,8 +13,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    credentials: true,
     origin: process.env.CLIENT_URI,
+    credentials: true,
   })
 );
 app.use(cookieParser());
@@ -24,9 +24,30 @@ connectDB();
 // import Routes
 import userRoute from "./routes/user.route.js";
 import productRoute from "./routes/product.route.js";
+import { ApiError } from "./utils/ApiError.js";
 
 // Acces Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
+
+// To make the apiError in json formate
+app.use((err, req, res, next) => {
+  console.error("APi Error: ", err); // For debugging (optional)
+
+  if (err instanceof ApiError) {
+    return res.status(err.statusCode).json({
+      success: err.success,
+      message: err.message,
+      data: err.data,
+    });
+  }
+
+  // Fallback for unknown errors
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
+    data: null,
+  });
+});
 
 export default app;
