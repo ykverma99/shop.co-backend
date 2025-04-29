@@ -20,7 +20,7 @@ const productSchema = Schema(
       type: String,
       required: [true, "Price is required"],
     },
-    desctiption: {
+    description: {
       type: String,
       required: [true, "Description is required"],
     },
@@ -28,10 +28,9 @@ const productSchema = Schema(
       type: Number,
       default: 0,
     },
-    category: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
-    },
+    colors: [{ type: Schema.Types.ObjectId, ref: "Color" }],
+    sizes: [{ type: Schema.Types.ObjectId, ref: "Size" }],
+    styles: [{ type: Schema.Types.ObjectId, ref: "Style" }],
     sellerId: {
       type: Schema.Types.ObjectId,
       ref: "User",

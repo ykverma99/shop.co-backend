@@ -29,7 +29,7 @@ const addProduct = asyncHandler(async (req, res) => {
   const product = await Product.create({
     productName,
     price,
-    desctiption: description,
+    description,
     stock,
     sellerId: req.user?._id,
     productImages,
