@@ -22,15 +22,19 @@ app.use(cookieParser());
 connectDB();
 
 // import Routes
+import { ApiError } from "./utils/ApiError.js";
 import userRoute from "./routes/user.route.js";
 import productRoute from "./routes/product.route.js";
 import addressRoute from "./routes/address.route.js";
-import { ApiError } from "./utils/ApiError.js";
+import filterRoutes from "./routes/filters.route.js";
+import cartRoute from "./routes/cart.route.js";
 
 // Acces Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/address", addressRoute);
+app.use("/api/filters", filterRoutes);
+
 // cart
 app.use("/api/v1/cart", cartRoute);
 

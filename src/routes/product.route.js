@@ -2,18 +2,19 @@ import { Router } from "express";
 import { isAdmin, verifyJWT } from "../middleware/auth.middleware.js";
 import {
   addProduct,
+  filterProducts,
+  getAdminProducts,
   getAllProduct,
-  getSingleprodcut,
+  getSingleProduct,
 } from "../controller/product.controller.js";
-import { upload } from "../middleware/multer.middleware.js";
 
 const router = Router();
 
-router
-  .route("/add-product")
-  .post(verifyJWT, isAdmin, upload.array("productImages", 5), addProduct);
+router.route("/add-product").post(verifyJWT, isAdmin, addProduct);
 
 router.route("/products").get(getAllProduct);
-router.route("/product").get(getSingleprodcut);
+router.get("/admin-products", verifyJWT, isAdmin, getAdminProducts);
+router.route("/product").get(getSingleProduct);
+router.get("/filter", filterProducts);
 
 export default router;

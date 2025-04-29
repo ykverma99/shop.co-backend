@@ -7,12 +7,6 @@ const productSchema = Schema(
       required: true,
       trim: true,
     },
-    productImages: [
-      {
-        type: String,
-        required: [true, "images is required"],
-      },
-    ],
     rating: {
       type: String,
     },

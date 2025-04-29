@@ -2,37 +2,32 @@ import { Product } from "../models/product.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
+// Add New Product
 const addProduct = asyncHandler(async (req, res) => {
-  const { productName, price, description, stock } = req.body;
+  const {
+    productName,
+    price,
+    description,
+    stock,
+    colors = [],
+    sizes = [],
+    styles = [],
+  } = req.body;
 
-  if (
-    [productName, price, description, stock].some(
-      (fields) => fields.trim() === ""
-    )
-  ) {
-    throw new ApiError("400", "All Fields are required");
+  if (![productName, price, description, stock].every(Boolean)) {
+    throw new ApiError(400, "All fields are required");
   }
 
-  if (!req.files || req.files.length === 0) {
-    throw new ApiError(400, "Product images are required");
-  }
-
-  const productImages = await Promise.all(
-    req.files.map(async (file) => {
-      const cloudImage = await uploadOnCloudinary(file.path);
-      if (!cloudImage) throw new ApiError(500, "Image upload failed");
-      return cloudImage.url;
-    })
-  );
   const product = await Product.create({
     productName,
     price,
     description,
     stock,
     sellerId: req.user?._id,
-    productImages,
+    colors,
+    sizes,
+    styles,
   });
 
   res
@@ -57,14 +52,77 @@ const getAllProduct = asyncHandler(async (req, res) => {
   });
 });
 
-const getSingleprodcut = asyncHandler(async (req, res) => {
+// // Get All Products
+// const getAllProduct = asyncHandler(async (req, res) => {
+//   const { limit } = req.query;
+
+//   let query = Product.find().populate("colors sizes styles");
+
+//   if (limit) {
+//     query = query.limit(parseInt(limit));
+//   }
+
+//   const products = await query;
+
+//   res.status(200).json(new ApiResponse(200, products));
+// });
+
+// Get Single Product
+const getSingleProduct = asyncHandler(async (req, res) => {
   const { productId, productName } = req.query;
 
   const product = await Product.findOne({
     $or: [{ _id: productId }, { productName }],
-  });
+  }).populate("colors sizes styles");
+
+  if (!product) throw new ApiError(404, "Product not found");
 
   return res.status(200).json(new ApiResponse(200, product));
 });
 
-export { addProduct, getAllProduct, getSingleprodcut };
+// get Admin Product
+const getAdminProducts = asyncHandler(async (req, res) => {
+  const adminId = req.user._id;
+
+  const products = await Product.find({ sellerId: adminId }).populate(
+    "colors sizes styles"
+  );
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, products, "Products uploaded by admin"));
+});
+
+const filterProducts = asyncHandler(async (req, res) => {
+  const { colorId, sizeId, styleId, search } = req.query;
+
+  const filter = {};
+
+  if (colorId) {
+    filter.colors = colorId;
+  }
+
+  if (sizeId) {
+    filter.sizes = sizeId;
+  }
+
+  if (styleId) {
+    filter.styles = styleId;
+  }
+
+  if (search) {
+    filter.productName = { $regex: search, $options: "i" }; // case-insensitive
+  }
+
+  const products = await Product.find(filter).populate("colors sizes styles");
+
+  res.status(200).json(new ApiResponse(200, products, "Filtered products"));
+});
+
+export {
+  addProduct,
+  getAllProduct,
+  getSingleProduct,
+  filterProducts,
+  getAdminProducts,
+};
