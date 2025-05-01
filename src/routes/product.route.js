@@ -12,9 +12,9 @@ const router = Router();
 
 router.route("/add-product").post(verifyJWT, isAdmin, addProduct);
 
-router.route("/products").get(getAllProduct);
+router.route("/").get(getAllProduct);
 router.get("/admin-products", verifyJWT, isAdmin, getAdminProducts);
-router.route("/product").get(getSingleProduct);
+router.route("/single").get(getSingleProduct);
 router.get("/filter", filterProducts);
 
 export default router;

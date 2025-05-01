@@ -10,12 +10,13 @@ const addProduct = asyncHandler(async (req, res) => {
     price,
     description,
     stock,
+    gender,
     colors = [],
     sizes = [],
     styles = [],
   } = req.body;
 
-  if (![productName, price, description, stock].every(Boolean)) {
+  if (![productName, price, description, stock, gender].every(Boolean)) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -24,6 +25,7 @@ const addProduct = asyncHandler(async (req, res) => {
     price,
     description,
     stock,
+    gender,
     sellerId: req.user?._id,
     colors,
     sizes,
@@ -35,24 +37,7 @@ const addProduct = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, product, "Product created successfully"));
 });
 
-const getAllProduct = asyncHandler(async (req, res) => {
-  const { limit } = req.query;
-
-  let products;
-  if (limit) {
-    products = await Product.find().limit(parseInt(limit));
-  }
-  if (!limit) {
-    products = await products.find();
-  }
-
-  res.status(200).json({
-    success: true,
-    products,
-  });
-});
-
-// // Get All Products
+// Get All Products
 // const getAllProduct = asyncHandler(async (req, res) => {
 //   const { limit } = req.query;
 
@@ -66,6 +51,67 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
 //   res.status(200).json(new ApiResponse(200, products));
 // });
+
+// Get All Product With Colors Seprate
+const getAllProduct = asyncHandler(async (req, res) => {
+  const { limit } = req.query;
+
+  const pipeline = [
+    {
+      $unwind: "$colors", // Split each color variant
+    },
+    {
+      $lookup: {
+        from: "colors", // Collection name (lowercase plural by Mongoose default)
+        localField: "colors",
+        foreignField: "_id",
+        as: "color",
+      },
+    },
+    {
+      $unwind: "$color", // Unwrap the color from array
+    },
+    {
+      $lookup: {
+        from: "sizes",
+        localField: "sizes",
+        foreignField: "_id",
+        as: "sizes",
+      },
+    },
+    {
+      $lookup: {
+        from: "styles",
+        localField: "styles",
+        foreignField: "_id",
+        as: "styles",
+      },
+    },
+    {
+      $project: {
+        productName: 1,
+        price: 1,
+        description: 1,
+        stock: 1,
+        gender: 1,
+        sellerId: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        sizes: 1,
+        styles: 1,
+        color: 1, // Already unwrapped and looked-up
+      },
+    },
+  ];
+
+  if (limit) {
+    pipeline.push({ $sample: { size: parseInt(limit) } });
+  }
+
+  const products = await Product.aggregate(pipeline);
+
+  res.status(200).json(new ApiResponse(200, products));
+});
 
 // Get Single Product
 const getSingleProduct = asyncHandler(async (req, res) => {

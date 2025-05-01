@@ -33,7 +33,7 @@ import cartRoute from "./routes/cart.route.js";
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/address", addressRoute);
-app.use("/api/filters", filterRoutes);
+app.use("/api/v1/filters", filterRoutes);
 
 // cart
 app.use("/api/v1/cart", cartRoute);

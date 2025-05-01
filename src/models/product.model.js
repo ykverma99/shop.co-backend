@@ -25,6 +25,11 @@ const productSchema = Schema(
     colors: [{ type: Schema.Types.ObjectId, ref: "Color" }],
     sizes: [{ type: Schema.Types.ObjectId, ref: "Size" }],
     styles: [{ type: Schema.Types.ObjectId, ref: "Style" }],
+    gender: {
+      type: String,
+      enum: ["male", "women", "unisex"],
+      default: "unisex",
+    },
     sellerId: {
       type: Schema.Types.ObjectId,
       ref: "User",
