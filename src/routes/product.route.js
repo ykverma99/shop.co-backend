@@ -4,7 +4,7 @@ import {
   addProduct,
   filterProducts,
   getAdminProducts,
-  getAllProduct,
+  getAllAndFilteredProduct,
   getSingleProduct,
 } from "../controller/product.controller.js";
 
@@ -12,7 +12,7 @@ const router = Router();
 
 router.route("/add-product").post(verifyJWT, isAdmin, addProduct);
 
-router.route("/").get(getAllProduct);
+router.route("/").get(getAllAndFilteredProduct);
 router.get("/admin-products", verifyJWT, isAdmin, getAdminProducts);
 router.route("/single").get(getSingleProduct);
 router.get("/filter", filterProducts);

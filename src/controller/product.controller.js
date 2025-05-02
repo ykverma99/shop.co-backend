@@ -53,24 +53,44 @@ const addProduct = asyncHandler(async (req, res) => {
 // });
 
 // Get All Product With Colors Seprate
-const getAllProduct = asyncHandler(async (req, res) => {
-  const { limit } = req.query;
+const getAllAndFilteredProduct = asyncHandler(async (req, res) => {
+  const { colorId, sizeId, styleId, search, limit } = req.query;
 
-  const pipeline = [
-    {
-      $unwind: "$colors", // Split each color variant
-    },
+  const matchStage = {};
+
+  if (colorId) {
+    matchStage.colors = mongoose.Types.ObjectId(colorId);
+  }
+
+  if (sizeId) {
+    matchStage.sizes = mongoose.Types.ObjectId(sizeId);
+  }
+
+  if (styleId) {
+    matchStage.styles = mongoose.Types.ObjectId(styleId);
+  }
+
+  if (search) {
+    matchStage.productName = { $regex: search, $options: "i" };
+  }
+
+  const pipeline = [];
+
+  if (Object.keys(matchStage).length > 0) {
+    pipeline.push({ $match: matchStage });
+  }
+
+  pipeline.push(
+    { $unwind: "$colors" },
     {
       $lookup: {
-        from: "colors", // Collection name (lowercase plural by Mongoose default)
+        from: "colors",
         localField: "colors",
         foreignField: "_id",
         as: "color",
       },
     },
-    {
-      $unwind: "$color", // Unwrap the color from array
-    },
+    { $unwind: "$color" },
     {
       $lookup: {
         from: "sizes",
@@ -99,10 +119,11 @@ const getAllProduct = asyncHandler(async (req, res) => {
         updatedAt: 1,
         sizes: 1,
         styles: 1,
-        color: 1, // Already unwrapped and looked-up
+        color: 1,
       },
     },
-  ];
+    { $sample: { size: 1000 } }
+  );
 
   if (limit) {
     pipeline.push({ $sample: { size: parseInt(limit) } });
@@ -110,7 +131,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
   const products = await Product.aggregate(pipeline);
 
-  res.status(200).json(new ApiResponse(200, products));
+  res.status(200).json(new ApiResponse(200, products, "Filtered products"));
 });
 
 // Get Single Product
@@ -167,7 +188,7 @@ const filterProducts = asyncHandler(async (req, res) => {
 
 export {
   addProduct,
-  getAllProduct,
+  getAllAndFilteredProduct,
   getSingleProduct,
   filterProducts,
   getAdminProducts,
