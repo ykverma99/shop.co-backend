@@ -73,7 +73,7 @@ const getUserCart = asyncHandler(async (req, res) => {
       },
       {
         path: "cartItems.color",
-        select: "name hexCode",
+        select: "name hexCode productImages",
       },
       {
         path: "cartItems.size",
