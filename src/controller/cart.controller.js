@@ -5,7 +5,7 @@ import { Cart } from "../models/cart.model.js";
 import { Product } from "../models/product.model.js";
 
 const addOrUpdateCart = asyncHandler(async (req, res) => {
-  const { productId, quantity } = req.body;
+  const { productId, quantity, colorId, sizeId } = req.body;
 
   if (!productId || !quantity) {
     throw new ApiError(400, "Product ID and quantity are required");
@@ -21,7 +21,15 @@ const addOrUpdateCart = asyncHandler(async (req, res) => {
   if (!cart) {
     cart = await Cart.create({
       user: req.user._id,
-      cartItems: [{ product: product._id, quantity, price: product.price }],
+      cartItems: [
+        {
+          product: product._id,
+          quantity,
+          price: product.price,
+          color: colorId,
+          size: sizeId,
+        },
+      ],
       totalPrice: product.price * quantity,
       totalItems: 1,
     });
@@ -31,12 +39,14 @@ const addOrUpdateCart = asyncHandler(async (req, res) => {
     );
 
     if (itemIndex > -1) {
-      cart.cartItems[itemIndex].quantity += quantity;
+      cart.cartItems[itemIndex].quantity = Number(quantity);
     } else {
       cart.cartItems.push({
         product: product._id,
         quantity,
         price: product.price,
+        color: colorId,
+        size: sizeId,
       });
     }
 
@@ -56,7 +66,20 @@ const addOrUpdateCart = asyncHandler(async (req, res) => {
 
 const getUserCart = asyncHandler(async (req, res) => {
   const cart = await Cart.findOne({ user: req.user._id })
-    .populate("cartItems.product", "name price images") // you can choose fields
+    .populate([
+      {
+        path: "cartItems.product",
+        select: "productName price",
+      },
+      {
+        path: "cartItems.color",
+        select: "name hexCode",
+      },
+      {
+        path: "cartItems.size",
+        select: "label value",
+      },
+    ])
     .select("-__v");
 
   if (!cart) {

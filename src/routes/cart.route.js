@@ -12,6 +12,6 @@ const router = Router();
 router.route("/").post(verifyJWT, addOrUpdateCart);
 router.route("/").get(verifyJWT, getUserCart);
 router.route("/:productId").post(verifyJWT, removeItemFromCart);
-router.route("/").post(verifyJWT, clearCart);
+router.route("/clear").post(verifyJWT, clearCart);
 
 export default router;

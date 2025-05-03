@@ -14,6 +14,16 @@ const cartSchema = new Schema(
           ref: "Product",
           required: true,
         },
+        color: {
+          type: Schema.Types.ObjectId,
+          ref: "Color",
+          required: true,
+        },
+        size: {
+          type: Schema.Types.ObjectId,
+          ref: "Size",
+          required: true,
+        },
         quantity: {
           type: Number,
           required: true,
