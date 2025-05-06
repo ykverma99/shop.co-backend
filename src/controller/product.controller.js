@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Product } from "../models/product.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -58,16 +59,16 @@ const getAllAndFilteredProduct = asyncHandler(async (req, res) => {
 
   const matchStage = {};
 
-  if (colorId) {
-    matchStage.colors = mongoose.Types.ObjectId(colorId);
+  if (colorId && mongoose.Types.ObjectId.isValid(colorId)) {
+    matchStage.colors = new mongoose.Types.ObjectId(colorId);
   }
 
-  if (sizeId) {
-    matchStage.sizes = mongoose.Types.ObjectId(sizeId);
+  if (sizeId && mongoose.Types.ObjectId.isValid(sizeId)) {
+    matchStage.sizes = new mongoose.Types.ObjectId(sizeId);
   }
 
-  if (styleId) {
-    matchStage.styles = mongoose.Types.ObjectId(styleId);
+  if (styleId && mongoose.Types.ObjectId.isValid(styleId)) {
+    matchStage.styles = new mongoose.Types.ObjectId(styleId);
   }
 
   if (search) {
@@ -121,8 +122,7 @@ const getAllAndFilteredProduct = asyncHandler(async (req, res) => {
         styles: 1,
         color: 1,
       },
-    },
-    { $sample: { size: 1000 } }
+    }
   );
 
   if (limit) {

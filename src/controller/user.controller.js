@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 var option = {
   httpOnly: true,
   secure: true,
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
 const genrateAccessAndRefreshToken = async (userId) => {

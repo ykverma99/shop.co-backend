@@ -6,6 +6,7 @@ import {
   getAllSizes,
   addStyle,
   getAllStyles,
+  getAllOptions,
 } from "../controller/filters.controller.js";
 import { isAdmin, verifyJWT } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
@@ -29,5 +30,6 @@ router.get("/size", getAllSizes);
 // Style Routes
 router.post("/style", verifyJWT, isAdmin, addStyle);
 router.get("/style", getAllStyles);
+router.get("/all-options", getAllOptions);
 
 export default router;

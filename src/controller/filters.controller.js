@@ -59,3 +59,17 @@ export const getAllStyles = asyncHandler(async (req, res) => {
   const styles = await Style.find();
   res.status(200).json(new ApiResponse(200, styles));
 });
+
+export const getAllOptions = asyncHandler(async (req, res) => {
+  const [colors, sizes, styles] = await Promise.all([
+    Color.aggregate([{ $sample: { size: 10 } }]),
+    Size.find(),
+    Style.find(),
+  ]);
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, { colors, sizes, styles }, "Fetched all options")
+    );
+});
