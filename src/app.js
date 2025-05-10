@@ -28,12 +28,14 @@ import productRoute from "./routes/product.route.js";
 import addressRoute from "./routes/address.route.js";
 import filterRoutes from "./routes/filters.route.js";
 import cartRoute from "./routes/cart.route.js";
+import orderRoute from "./routes/order.route.js";
 
 // Acces Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/address", addressRoute);
 app.use("/api/v1/filters", filterRoutes);
+app.use("/api/v1/order", orderRoute);
 
 // cart
 app.use("/api/v1/cart", cartRoute);
